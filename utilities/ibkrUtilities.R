@@ -5,7 +5,7 @@ library("ichimoku")
 library("zoo")
 library("xts")
 library("quantmod")
-source('BollingerBands/BollingerFunctions.R')
+source('utilities/dataGenerationUtilities/bollingerBands.R')
 
 
 #' Function to retrieve historical stock data using the Interactive Brokers TWS API.
@@ -62,14 +62,14 @@ add_Analysis_Data_To_Historical_Data <- function(stk_data, ticker){
   stk_data$Orders <- 0
   stk_data$Position <- 0
   stk_data$holdingGrossReturn <- stk_data[, tickerWAP]/as.numeric(stk_data[, tickerWAP][1])
-  stk_data <- create_bollinger_bands(stk_data, ticker, periods = 50, ma = "SMA")
-  stk_data <- create_bollinger_bands(stk_data, ticker, periods = 20, ma = "SMA")
+  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 50, ma = "SMA")
+  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 20, ma = "SMA")
   # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 20, ma = "EMA")
   # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 20, ma = "WMA")
-  stk_data <- create_bollinger_bands(stk_data, ticker, periods = 10, ma = "SMA")
+  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 10, ma = "SMA")
   # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 10, ma = "EMA")
   # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 10, ma = "WMA")
-  stk_data <- create_bollinger_bands(stk_data, ticker, periods = 5, ma = "SMA")
+  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 5, ma = "SMA")
   # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 5, ma = "EMA")
   # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 5, ma = "WMA")
   # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 3, ma = "SMA")
@@ -117,7 +117,7 @@ create_Folder_Name <- function(barsize, duration, strategy, mac_len_short = 3, m
 
 
 #' A function that check if a file exists within a specified path
-file_Exists_In_Folder <- function(filename, folderPath = "C:\\Users\\nikit\\OneDrive - BCIT\\R Projects\\Cleaning Up Automated Trading\\data\\"){
+file_Exists_In_Folder <- function(filename, folderPath = paste0(get_Working_Directory_As_Path(),"\\data\\")){
   file_path <- file.path(folderPath, filename)
   if (file.exists(file_path)) {
     print(paste(filename, "already exists"))
@@ -129,20 +129,33 @@ file_Exists_In_Folder <- function(filename, folderPath = "C:\\Users\\nikit\\OneD
 
 #' A function that adds errored tickers to a log file
 add_Errored_Tickers_To_Log <- function(ticker) {
-  logFilePath <- file.path("C:\\Users\\nikit\\OneDrive - BCIT\\R Projects\\Cleaning Up Automated Trading\\data\\ErroredTickers")
+  logFilePath <- file.path(get_Working_Directory_As_Path(),"data","ErroredTickers")
   
-  if (!file.exists(logFilePath)) {
+  if (!dir.exists(logFilePath)) {
     dir.create(logFilePath, recursive = TRUE)
   }
   
   csvFilePathName <- file.path(logFilePath, "ErroredTickers.csv")
-  write.table(ticker, csvFilePathName, sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+  
+  # if the file doesn't exist, create it and add the ticker
+  if (!file.exists(csvFilePathName)) {
+    write.table(ticker, csvFilePathName, sep = ",", col.names = FALSE, row.names = FALSE, append = FALSE)
+  } else {
+    # if the file exists, read it
+    existing_tickers <- read.csv(csvFilePathName, header = FALSE, stringsAsFactors = FALSE)
+    
+    # check if ticker is already in the file
+    if (!(ticker %in% existing_tickers$V1)) {
+      # if it's not in the file, append it
+      write.table(ticker, csvFilePathName, sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    }
+  }
 }
 
 #' A function that checks whether a data subfolder exists for a given strategy, and creates it if it doesn't
 create_Data_Results_Directory <- function(barsize, duration, strategy = "MAC", mac_len_short=3, mac_len_long = 10){
   folderName <- create_Folder_Name(barsize, duration, strategy = strategy, mac_len_short= mac_len_short, mac_len_long = mac_len_long)
-  logFilePath <- file.path(paste0("C:\\Users\\nikit\\OneDrive - BCIT\\R Projects\\Cleaning Up Automated Trading\\data\\", folderName))
+  logFilePath <- file.path(paste0(get_Working_Directory_As_Path(),"\\data\\", folderName))
 
   #If the folder doesn't exist, create it
   if (!dir.exists(logFilePath)) {
