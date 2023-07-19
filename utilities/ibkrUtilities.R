@@ -75,7 +75,7 @@ add_Analysis_Data_To_Historical_Data <- function(stk_data, ticker){
   # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 3, ma = "SMA")
   # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 3, ma = "EMA")
   # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 3, ma = "WMA")
-  stk_data <- add_SD_To_Data(stk_data, tickerWAP)
+  # stk_data <- add_SD_To_Data(stk_data, tickerWAP)
   return(stk_data)
 }
 

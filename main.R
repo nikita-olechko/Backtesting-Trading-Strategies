@@ -6,27 +6,16 @@ library("zoo")
 # Source ibkrUtilities functions
 source('utilities/ibkrUtilities.R')
 source('utilities/dataMiningUtilities.R')
-source('MACFunctions/MACSimulations.R')
-source('MACFunctions/MACFunctions.R')
-source('BollingerBands/BollingerSimulation.R')
-
+source('utilities/dataGenerationUtilities/generalGenerationUtilities.R')
+source('simulations/simulationUtilities.R')
+source('strategies/60PeriodSMA.R')
 
 #Connect to IBKR
 # tws <- twsConnect(port = 7496)
-tws <- twsConnect(port = 4000)
+tws <- twsConnect(port = 4000, clientId = 2)
 isConnected(tws)
-
-ticker = "XOM"
-barsize = "5 secs"
-duration = "1 D"
 # retrieve_Base_Data(ticker, barsize = barsize, duration = duration)
-
-contract <- twsEquity(ticker,"SMART","SMART")
-# reqMktData(tws, contract)
-fh <- file('out.csv',open='a')
-reqMktData(tws, contract, file=fh)
-close(fh)
-cancelMktData(tws,ticker)
-
-data <- read.table("out.csv")
-
+strategy = "5PeriodSmaTest"
+run_Strategy_On_List_Of_Tickers(tws, strategy, sampleSMABuySellStrategy, 
+                                        generate_Additional_Data_Function = generate5PeriodSMA, 
+                                        barsize = "1 day", duration = "3 M", strategy_period_offset=1)
