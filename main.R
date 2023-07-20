@@ -13,7 +13,7 @@ source('strategies/60PeriodSMA.R')
 
 #Connect to IBKR
 # tws <- twsConnect(port = 7496)
-tws <- twsConnect(port = 4000, clientId = 3)
+tws <- twsConnect(port = 4000, clientId = 4)
 isConnected(tws)
 # retrieve_Base_Data(ticker, barsize = barsize, duration = duration)
 strategy = "5PeriodSmaTest"

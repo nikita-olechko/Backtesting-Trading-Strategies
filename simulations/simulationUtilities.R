@@ -14,25 +14,32 @@ run_Strategy_On_List_Of_Tickers <- function(tws, strategy, strategy_Buy_Or_Sell_
   
   # folderName <- create_Folder_Name(barsize, duration, strategy = strategy)
   folderPath <- paste0(get_Working_Directory_As_Path(), "\\data\\Strategy Results\\")
-  all_tickers_summary <- data.frame()
-  for (ticker in listOfTickers) {
-    # Skip tickers that previously erred (ignore for now)
-    if (ticker %in% erredTickers$V1){
-      print(paste("Skip Previously Errored Ticker:", ticker))
-      next()
+  summary_file_path_name <- paste0(folderPath, str_replace_all(strategy, " ", ""), str_replace_all(barsize, " ", ""), str_replace_all(duration, " ", ""), ".csv")
+  tryCatch({
+    all_tickers_summary <- read.csv(summary_file_path_name)
+    if ("X" %in% colnames(all_tickers_summary)) {
+      all_tickers_summary$X <- NULL
     }
+  }, error = function(e) {
+    cat("Couldn't read all_tickers_summary:", conditionMessage(e), "\n")
+  })
+  if (exists("all_tickers_summary")){
+    completed_tickers <- all_tickers_summary$ticker
+    listOfTickers <- listOfTickers[!(listOfTickers %in% completed_tickers)]
+  }
+  else{
+    all_tickers_summary <- data.frame() 
+  }
+  listOfTickers <- listOfTickers[!(listOfTickers %in% erredTickers$V1)]
+  for (ticker in listOfTickers) {
     #run garbage collector
     gc()
-    filename <- createFileName(ticker, barsize, duration, strategy)
-    # if this data does not already exist
-    if (!file_Exists_In_Folder(filename, folderPath = folderPath)){
-      stk_data <- retrieve_Base_Data(ticker, barsize = barsize, duration = duration)
-      if (!is.null(stk_data)){
-      summary_df <- simulate_Trading_On_Strategy(stk_data, ticker, strategy_Buy_Or_Sell_Condition_Function, 
-                                               generate_Additional_Data_Function = generate_Additional_Data_Function, barsize = barsize, duration = duration, strategy_period_offset = strategy_period_offset)
-      all_tickers_summary <- rbind(all_tickers_summary, summary_df)
-      write.csv(all_tickers_summary ,paste0(folderPath, str_replace_all(strategy, " ", ""), str_replace_all(barsize, " ", ""), str_replace_all(duration, " ", ""), ".csv"))
-      }
+    stk_data <- retrieve_Base_Data(ticker, barsize = barsize, duration = duration)
+    if (!is.null(stk_data)){
+    summary_df <- simulate_Trading_On_Strategy(stk_data, ticker, strategy_Buy_Or_Sell_Condition_Function, 
+                                             generate_Additional_Data_Function = generate_Additional_Data_Function, barsize = barsize, duration = duration, strategy_period_offset = strategy_period_offset)
+    all_tickers_summary <- rbind(all_tickers_summary, summary_df)
+    write.csv(all_tickers_summary , summary_file_path_name)
     }
     # if the data already exists (the program was restarted or something)
     else{ 
