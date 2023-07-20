@@ -100,28 +100,12 @@ simulate_Trading_On_Strategy <- function(stk_data, ticker, strategy_Buy_Or_Sell_
         next()
       }
     }
-    
-    # index != length(stk_data$Position) this condition makes sure we do not buy on the very last row
-    if (order == 1 & index != length(stk_data$Position)){
-      stk_data$Orders[index] <- 1
-      last_order_index <- index
-      stk_data$Position[index] <- as.numeric(stk_data$Position[index - 1]) - as.numeric(stk_data[, ticker_wap][index])
-    }
-    else if (order == -1){
-      stk_data$Orders[index] <- -1
-      last_order_index <- index
-      stk_data$Position[index] <- as.numeric(stk_data$Position[index - 1]) + as.numeric(stk_data[, ticker_wap][index])
-    }
-    else if (order == 2){
-      stk_data$Orders[index] <- 2
-      stk_data$Position[index] <- stk_data$Position[index-1]
-    }
-    else{
-      stk_data$Position[index] <- stk_data$Position[index-1]
-      next()
+    else {
+      order_function_outputs <- order_selector(order)(stk_data, index, last_order_index, ticker_wap)
+      stk_data <- order_function_outputs[[1]]
+      last_order_index <- order_function_outputs[[2]]
     }
   }
-  #if the last order we did was buy, sell to get our net position
   if (toString(stk_data$Orders[last_order_index]) == 1){
     stk_data$Orders[index] <- -1
     last_order_index <- index

@@ -11,21 +11,37 @@ generate5PeriodSMA <- function(stk_data, ticker_wap, period=5){
   return(stk_data)
 }
 
-sampleSMABuySellStrategy <- function(stk_data, ticker_wap, index, last_order_index){
-  if (stk_data[, "Orders"][last_order_index] == 1){
-    if (as.numeric(stk_data$sma[index]) < as.numeric(stk_data$sma[index-1])){
-      return (-1)
-    }
-    else {
+# sampleSMABuySellStrategy <- function(stk_data, ticker_wap, index){
+#   if (as.numeric(stk_data$sma[index]) < as.numeric(stk_data$sma[index-1])){
+#       return (-1)
+#     }
+#   else {
+#     if (as.numeric(stk_data$sma[index]) > as.numeric(stk_data$sma[index-1])){
+#       return (1)
+#     }
+#     else {
+#       return (0)
+#     }
+#   }
+# }
+
+sampleSMABuySellStrategy <- function(stk_data, ticker_wap, index, last_order_index) {
+  current_sma <- as.numeric(stk_data$sma[index])
+  last_sma <- as.numeric(stk_data$sma[index-1])
+  
+  if (current_sma < last_sma) {
+    if (stk_data$Orders[last_order_index] != 1) {
+      return (1)
+    } else {
       return (2)
     }
-  }
-  else {
-    if (as.numeric(stk_data$sma[index]) > as.numeric(stk_data$sma[index-1])){
-      return (1)
-    }
-    else {
+  } else if (current_sma >= last_sma) {
+    if (stk_data$Orders[last_order_index] != -1) {
+      return (-1)
+    } else { 
       return (0)
     }
+  } else {
+    return (0)
   }
 }

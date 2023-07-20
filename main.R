@@ -9,6 +9,7 @@ source('utilities/dataMiningUtilities.R')
 source('utilities/dataGenerationUtilities/generalGenerationUtilities.R')
 source('utilities/dataGenerationUtilities/bollingerBands.R')
 source('simulations/simulationUtilities.R')
+source('simulations/customOrders.R')
 source('strategies/60PeriodSMA.R')
 
 #Connect to IBKR
