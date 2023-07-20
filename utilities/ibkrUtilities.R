@@ -12,7 +12,6 @@ source('utilities/dataGenerationUtilities/bollingerBands.R')
 get_Stock_Data <- function(tws, security, barsize = "1 day", duration = "1 Y",
                          whatToShow = 'TRADES') {
   #
-  print("entered getStockData")
   ticker <- toString(security["symbol"])
   fileName <- create_Historical_Data_File_Name(ticker, barsize, duration)
   folderPath <- paste0(get_Working_Directory_As_Path(), "\\data\\Historical Data\\")
@@ -53,29 +52,6 @@ get_Stock_Data <- function(tws, security, barsize = "1 day", duration = "1 Y",
       return (NULL)
     }
   }
-  return(stk_data)
-}
-
-
-add_Analysis_Data_To_Historical_Data <- function(stk_data, ticker){
-  tickerWAP <- paste0(ticker, ".WAP")
-  stk_data$Orders <- 0
-  stk_data$Position <- 0
-  stk_data$holdingGrossReturn <- stk_data[, tickerWAP]/as.numeric(stk_data[, tickerWAP][1])
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 50, ma = "SMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 20, ma = "SMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 20, ma = "EMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 20, ma = "WMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 10, ma = "SMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 10, ma = "EMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 10, ma = "WMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 5, ma = "SMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 5, ma = "EMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 5, ma = "WMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 3, ma = "SMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 3, ma = "EMA")
-  # stk_data <- create_bollinger_bands(stk_data, ticker, periods = 3, ma = "WMA")
-  # stk_data <- add_SD_To_Data(stk_data, tickerWAP)
   return(stk_data)
 }
 

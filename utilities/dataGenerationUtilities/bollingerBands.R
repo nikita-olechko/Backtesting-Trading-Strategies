@@ -6,14 +6,14 @@ library("TTR")
 
 #' A function to create 1 and 2 sd, upper and lower Bollinger Bands along a stock
 create_BBands <- function(stk_data, ticker, maName, ma, sma_length = 20) {
-  tickerWAP <- paste0(ticker, ".WAP")
+  ticker_wap <- paste0(ticker, ".WAP")
   stk_ma <- stk_data[, maName]
   BBandNameList <- create_Bband_Names(ma, sma_length)
   stk_data$BBand <- rollapply(
     stk_ma,
     width = sma_length,
     FUN = calculate_Upper_Bollinger_Band,
-    wap = stk_data[, tickerWAP],
+    wap = stk_data[, ticker_wap],
     align = "right",
     fill = NA,
     by.column = FALSE,
@@ -25,7 +25,7 @@ create_BBands <- function(stk_data, ticker, maName, ma, sma_length = 20) {
     stk_ma,
     width = sma_length,
     FUN = calculate_Lower_Bollinger_Band,
-    wap = stk_data[, tickerWAP],
+    wap = stk_data[, ticker_wap],
     align = "right",
     fill = NA,
     by.column = FALSE,
@@ -36,7 +36,7 @@ create_BBands <- function(stk_data, ticker, maName, ma, sma_length = 20) {
     stk_ma,
     width = sma_length,
     FUN = calculate_Upper_Bollinger_Band,
-    wap = stk_data[, tickerWAP],
+    wap = stk_data[, ticker_wap],
     deviations = 1,
     align = "right",
     fill = NA,
@@ -48,7 +48,7 @@ create_BBands <- function(stk_data, ticker, maName, ma, sma_length = 20) {
     stk_ma,
     width = sma_length,
     FUN = calculate_Lower_Bollinger_Band,
-    wap = stk_data[, tickerWAP],
+    wap = stk_data[, ticker_wap],
     deviations = 1,
     align = "right",
     fill = NA,
@@ -90,10 +90,10 @@ calculate_Lower_Bollinger_Band <- function(sma, wap, deviations = 2) {
 #' A function that creates upper and lower bollinger bands from historical price data
 #' Note that 'ma' stands for Moving Average
 create_bollinger_bands <- function(stk_data, ticker, periods = 20, ma = "SMA"){
-  tickerWAP <- paste0(ticker, ".WAP")
+  ticker_wap <- paste0(ticker, ".WAP")
   maName <- paste0(periods, "Period", ma)
   maFunc <- get_MA_function(ma)
-  stk_data$maName <- maFunc(stk_data[, tickerWAP], periods)
+  stk_data$maName <- maFunc(stk_data[, ticker_wap], periods)
   names(stk_data)[names(stk_data) == "maName"] <- maName
   stk_data <- create_BBands(stk_data, ticker, maName, ma, sma_length = periods)
   return (stk_data)
@@ -134,9 +134,9 @@ create_Bband_Names <- function(ma, periods){
   return(nameList)
 }
 
-add_SD_To_Data <- function(stk_data, tickerWAP){
+add_SD_To_Data <- function(stk_data, ticker_wap){
   stk_data$SD20Days <- rollapply(
-    stk_data[, tickerWAP],
+    stk_data[, ticker_wap],
     width = 20,
     FUN = sd,
     align = "right",
@@ -145,7 +145,7 @@ add_SD_To_Data <- function(stk_data, tickerWAP){
     partial = TRUE
   )
   stk_data$SD10Days <- rollapply(
-    stk_data[, tickerWAP],
+    stk_data[, ticker_wap],
     width = 10,
     FUN = sd,
     align = "right",
@@ -154,7 +154,7 @@ add_SD_To_Data <- function(stk_data, tickerWAP){
     partial = TRUE
   )  
   stk_data$SD5Days <- rollapply(
-    stk_data[, tickerWAP],
+    stk_data[, ticker_wap],
     width = 5,
     FUN = sd,
     align = "right",

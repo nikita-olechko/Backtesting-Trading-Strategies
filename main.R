@@ -7,12 +7,13 @@ library("zoo")
 source('utilities/ibkrUtilities.R')
 source('utilities/dataMiningUtilities.R')
 source('utilities/dataGenerationUtilities/generalGenerationUtilities.R')
+source('utilities/dataGenerationUtilities/bollingerBands.R')
 source('simulations/simulationUtilities.R')
 source('strategies/60PeriodSMA.R')
 
 #Connect to IBKR
 # tws <- twsConnect(port = 7496)
-tws <- twsConnect(port = 4000, clientId = 2)
+tws <- twsConnect(port = 4000, clientId = 3)
 isConnected(tws)
 # retrieve_Base_Data(ticker, barsize = barsize, duration = duration)
 strategy = "5PeriodSmaTest"

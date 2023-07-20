@@ -14,7 +14,7 @@ run_Strategy_On_List_Of_Tickers <- function(tws, strategy, strategy_Buy_Or_Sell_
   
   # folderName <- create_Folder_Name(barsize, duration, strategy = strategy)
   folderPath <- paste0(get_Working_Directory_As_Path(), "\\data\\Strategy Results\\")
-  
+  all_tickers_summary <- data.frame()
   for (ticker in listOfTickers) {
     # Skip tickers that previously erred (ignore for now)
     if (ticker %in% erredTickers$V1){
@@ -22,16 +22,16 @@ run_Strategy_On_List_Of_Tickers <- function(tws, strategy, strategy_Buy_Or_Sell_
       next()
     }
     #run garbage collector
-    
-    # RESTRUCTURE FOR DATA SUMMARIZATION
     gc()
     filename <- createFileName(ticker, barsize, duration, strategy)
     # if this data does not already exist
     if (!file_Exists_In_Folder(filename, folderPath = folderPath)){
       stk_data <- retrieve_Base_Data(ticker, barsize = barsize, duration = duration)
       if (!is.null(stk_data)){
-      stk_data <- simulate_Trading_On_Strategy(stk_data, ticker, strategy_Buy_Or_Sell_Condition_Function, 
+      summary_df <- simulate_Trading_On_Strategy(stk_data, ticker, strategy_Buy_Or_Sell_Condition_Function, 
                                                generate_Additional_Data_Function = generate_Additional_Data_Function, barsize = barsize, duration = duration, strategy_period_offset = strategy_period_offset)
+      all_tickers_summary <- rbind(all_tickers_summary, summary_df)
+      write.csv(all_tickers_summary ,paste0(folderPath, str_replace_all(strategy, " ", ""), str_replace_all(barsize, " ", ""), str_replace_all(duration, " ", ""), ".csv"))
       }
     }
     # if the data already exists (the program was restarted or something)
@@ -65,7 +65,7 @@ write_Updated_Data <- function(data_to_write ,ticker, barsize, strategy){
 #' A function that simulates trading on a stock, based on a given strategy.
 #' @param stk_data an xts dataframe containing stock data
 #' @param ticker a string containing the name of a stock
-#' @param strategy_Buy_Or_Sell_Condition_Function a function that returns "Buy", "Sell", or 0 based on some market conditions
+#' @param strategy_Buy_Or_Sell_Condition_Function a function that returns 1, -1, or 0 based on some market conditions
 #' @param generate_Additional_Data_Function a function that generates additional columns in stk_data if necessary for the strategy
 simulate_Trading_On_Strategy <- function(stk_data, ticker, strategy_Buy_Or_Sell_Condition_Function, generate_Additional_Data_Function = NULL, barsize = "1 day", duration = "1 Y", strategy_period_offset = 20) {
   ticker_wap <- paste0(ticker, ".WAP")
@@ -83,8 +83,8 @@ simulate_Trading_On_Strategy <- function(stk_data, ticker, strategy_Buy_Or_Sell_
     
     # If this is the first order, wait until first Buy order to establish the position
     if (last_order_index == 1){
-      if(order == "Buy"){
-        stk_data$Orders[index] <- "Buy"
+      if(order == 1){
+        stk_data$Orders[index] <- 1
         stk_data$Position[index] <- - as.numeric(stk_data[, ticker_wap][index])
         last_order_index <- index
         next()
@@ -95,15 +95,19 @@ simulate_Trading_On_Strategy <- function(stk_data, ticker, strategy_Buy_Or_Sell_
     }
     
     # index != length(stk_data$Position) this condition makes sure we do not buy on the very last row
-    if (order == "Buy" & index != length(stk_data$Position)){
-      stk_data$Orders[index] <- "Buy"
+    if (order == 1 & index != length(stk_data$Position)){
+      stk_data$Orders[index] <- 1
       last_order_index <- index
       stk_data$Position[index] <- as.numeric(stk_data$Position[index - 1]) - as.numeric(stk_data[, ticker_wap][index])
     }
-    else if (order == "Sell"){
-      stk_data$Orders[index] <- "Sell"
+    else if (order == -1){
+      stk_data$Orders[index] <- -1
       last_order_index <- index
       stk_data$Position[index] <- as.numeric(stk_data$Position[index - 1]) + as.numeric(stk_data[, ticker_wap][index])
+    }
+    else if (order == 2){
+      stk_data$Orders[index] <- 2
+      stk_data$Position[index] <- stk_data$Position[index-1]
     }
     else{
       stk_data$Position[index] <- stk_data$Position[index-1]
@@ -111,15 +115,13 @@ simulate_Trading_On_Strategy <- function(stk_data, ticker, strategy_Buy_Or_Sell_
     }
   }
   #if the last order we did was buy, sell to get our net position
-  if (toString(stk_data$Orders[last_order_index]) == "Buy"){
-    stk_data$Orders[index] <- "Sell"
+  if (toString(stk_data$Orders[last_order_index]) == 1){
+    stk_data$Orders[index] <- -1
     last_order_index <- index
     stk_data$Position[index] <- as.numeric(stk_data$Position[index - 1]) + as.numeric(stk_data[, ticker_wap][index])
   }
-  
-  print(stk_data$Position[nrow(stk_data)])
-  # stk_data$holdingGrossReturn[index] <-  - as.numeric(stk_data[, ticker_wap][1]) + as.numeric(stk_data[, ticker_wap][index])
-  return (stk_data)
+  summary_df <- create_summary_data(stk_data, ticker)
+  return (summary_df)
 }
 
 
