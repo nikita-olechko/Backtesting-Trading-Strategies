@@ -7,8 +7,9 @@ See Full Disclaimer Below.
 # Features:
 
 Allows for custom trading strategies
+Accesses completely up-to-date historical data from Interactive Brokers (IBKR)
 Modular design to accommodate various order types and quantities
-Supports limit and stop-loss orders in addition to market orders
+Supports limit and stop-loss orders in addition to market orders (and any custom order)
 Capable of running multiple backtests with different strategies simultaneously
 Includes a sample testing strategy based on 60-period SMA
 
@@ -31,6 +32,8 @@ To create custom order strategies, modify the customOrders.R file to contain you
 
 Modify the main.R file to reflect any changes in barsize, duration, strategy name, strategy function, and data generation function(s).
 
+Open IBKR Trader Workstation and make sure it is running on port 4000.
+
 Run the R script with the command: Rscript main.R.
 
 To create strategy report parameters, modify the function create_summary_data() in utilities/dataGenerationUtilities/generalGenerationUtilities.R
@@ -52,6 +55,12 @@ You can create your own strategy by developing similar functions that align with
 # Running Multiple Strategies:
 
 If you want to run several strategies simultaneously, you can create new instances of the backtest system. It's recommended to run them in separate consoles if you want to see live updates.
+
+# Data:
+
+The system searches for asset data in 2 ways: first, locally on your system, and then from IBKR. If it cannot find the appropriate data on your system, it will attempt to retrieve it from IBKR and write it to the system locally. This is done to speed up future strategy testing, as retrieving data from IBKR takes time, especially for large datasets.
+
+The system keeps an internal list of erroredTickers, as IBKR does not always successfully return all tickers, and so the system will skip tickers previously errored. To try all tickers again, delete the file /data/ErroredTickers/ErroredTickers.csv
 
 # Disclaimer:
 
