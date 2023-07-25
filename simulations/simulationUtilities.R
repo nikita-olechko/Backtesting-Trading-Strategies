@@ -59,16 +59,6 @@ retrieve_Base_Data <- function(ticker, exchange = "SMART", barsize = "1 day", du
   return (stk_data)
 }
 
-
-#' A function to write stock simulation data to a custom file 
-write_Updated_Data <- function(data_to_write ,ticker, barsize, strategy){
-  fileName <- createFileName(ticker, barsize, duration, strategy = strategy)
-  folderPath <- paste0(get_Working_Directory_As_Path(), "\\data\\Strategy Results\\")
-  write_Zoo_Data_To_Folder(data_to_write, fileName, folderPath)
-}
-
-
-
 #' A function that simulates trading on a stock, based on a given strategy.
 #' @param stk_data an xts dataframe containing stock data
 #' @param ticker a string containing the name of a stock

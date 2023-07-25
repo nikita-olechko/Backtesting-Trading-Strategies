@@ -161,6 +161,14 @@ write_xts_Data_To_Folder <- function(data, fileName, folderPath){
   write.csv(data, filePathName, row.names = FALSE)
 }
 
+#' A function to write stock simulation data to a custom file 
+write_Updated_Data <- function(data_to_write ,ticker, barsize, strategy){
+  fileName <- createFileName(ticker, barsize, duration, strategy = strategy)
+  folderPath <- paste0(get_Working_Directory_As_Path(), "\\data\\Strategy Results\\")
+  write_Zoo_Data_To_Folder(data_to_write, fileName, folderPath)
+}
+
+
 #' A function to get your working directory as a string to make things run on any system
 get_Working_Directory_As_Path <- function(){
   wd <- toString(getwd())

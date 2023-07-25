@@ -43,6 +43,7 @@ create_summary_data <- function(stk_data, ticker, summary_df = NULL){
   # stk_data$returnOverHolding <-  stk_data[, ticker_wap]+stk_data[, "Position"]
   trade_completed_indices <- which(stk_data$Orders == -1)
   # Summarize position
+  final_position <- stk_data$Position[length(stk_data$Position)]
   average_position_post_trade <- stk_data$Position[trade_completed_indices] %>% mean()
   sd_position_post_trade <- stk_data$Position[trade_completed_indices] %>% sd()
   max_position_post_trade <- stk_data$Position[trade_completed_indices] %>% max()
@@ -74,6 +75,7 @@ create_summary_data <- function(stk_data, ticker, summary_df = NULL){
   # Create a dataframe with the computed variables
   new_summary <- data.frame(
   ticker = ticker,
+  finalPosition = final_position,
   AveragePosition = average_position_post_trade,
   SDPosition = sd_position_post_trade,
   MaxPosition = max_position_post_trade,
