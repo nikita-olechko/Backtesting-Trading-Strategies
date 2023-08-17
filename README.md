@@ -4,7 +4,7 @@ This project contains a backtesting system that allows you to simulate trading s
 
 See Full Disclaimer Below.
 
-# Features:
+# Features
 
 Allows for custom trading strategies
 Accesses completely up-to-date historical data from Interactive Brokers (IBKR)
@@ -13,14 +13,16 @@ Supports limit and stop-loss orders in addition to market orders (and any custom
 Capable of running multiple backtests with different strategies simultaneously
 Includes a sample testing strategy based on 60-period SMA
 
-# Requirements:
+Note: An updated version of this system exists in Python in the complementary repository 'Live-Algorithmic-Trading-In-Python'. It has many improved features, functionality, and is being monitored and updated. If you intend to use this system for live trading, building neural network models, or performing heavy-duty analysis, I encourage you to look into the other repository. 
+
+# Requirements
 
 R version 3.5 or higher
 R packages: quantstrat, PerformanceAnalytics, TTR
 Interactive Brokers account
-IBKR Trader Workstation installed, open, and running on port 4000 (not the default)
+IBKR Trader Workstation installed, open, and running on port 4000 (this is not the default port)
 
-# Setup and Usage:
+# Setup and Usage
 
 Clone the repository to your local machine.
 
@@ -40,7 +42,7 @@ To create strategy report parameters, modify the function create_summary_data() 
 
 You will find a new file in the data/strategy Results folder in the format strategy + barsize + duration. This file will contain the results of your test strategy on each ticker. 
 
-# Customizing Strategies:
+# Customizing Strategies
 
 You can modify the backtesting system by changing the strategy functions in the R script. These functions determine the buy/sell decisions and the data generation for each backtest.
 
@@ -52,16 +54,16 @@ sampleSMABuySellStrategy(barDataFrame): Defines the strategy's decision-making p
 
 You can create your own strategy by developing similar functions that align with your trading approach. Any data generated in the first function can be used in the second function.
 
-# Running Multiple Strategies:
+# Running Multiple Strategies
 
 If you want to run several strategies simultaneously, you can create new instances of the backtest system. It's recommended to run them in separate consoles if you want to see live updates.
 
-# Data:
+# Data
 
 The system searches for asset data in 2 ways: first, locally on your system, and then from IBKR. If it cannot find the appropriate data on your system, it will attempt to retrieve it from IBKR and write it to the system locally. This is done to speed up future strategy testing, as retrieving data from IBKR takes time, especially for large datasets.
 
 The system keeps an internal list of erroredTickers, as IBKR does not always successfully return all tickers, and so the system will skip tickers previously errored. To try all tickers again, delete the file /data/ErroredTickers/ErroredTickers.csv
 
-# Disclaimer:
+# Disclaimer
 
 This backtesting system is a proof-of-concept and should not be used for live trading without careful review and enhancements. Trading involves substantial risk, and there is always the potential for loss. Your results may vary depending on various factors, such as your background, experience, and work ethic. All financial numbers referenced here, or on any of my sites and projects, are estimates or projections and should not be considered exact or a guarantee of potential earnings. Always trade responsibly and at your own risk. I am NOT a financial advisor.
