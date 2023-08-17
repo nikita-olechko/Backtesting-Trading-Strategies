@@ -13,7 +13,7 @@ Supports limit and stop-loss orders in addition to market orders (and any custom
 Capable of running multiple backtests with different strategies simultaneously
 Includes a sample testing strategy based on 60-period SMA
 
-Note: An updated version of this system exists in Python in the complementary repository 'Live-Algorithmic-Trading-In-Python'. It has many improved features, functionality, and is being monitored and updated. If you intend to use this system for live trading, building neural network models, or performing heavy-duty analysis, I encourage you to look into the other repository. 
+Note: An updated version of this system exists in Python in the complementary repository 'Live-Algorithmic-Trading-In-Python'. It has many improved features, functionality, and is being monitored and updated. If you intend to use this system for live trading, building neural network models, or performing heavy-duty analysis, I encourage you to look into the other repository as it may better suit your needs.
 
 # Requirements
 
